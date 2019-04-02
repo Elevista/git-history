@@ -48,7 +48,7 @@ export default {
     return {
       commits: [],
       index: 0,
-      touchX: 0,
+      touch: { x: 0 },
       url: this.$route.query.url || 'https://github.com/babel/babel/blob/master/packages/babel-core/test/browserify.js'
     }
   },
@@ -67,12 +67,12 @@ export default {
   methods: {
     paste () { setTimeout(() => { this.load() }, 0) },
     touchstart (evt) {
-      const { changedTouches: [{ clientX }] } = evt
-      this.touchX = clientX
+      const { changedTouches: [{ clientX: x }] } = evt
+      this.touch.x = x
     },
     touchend (evt) {
-      const { changedTouches: [{ clientX }] } = evt
-      const diff = clientX - this.touchX
+      const { changedTouches: [{ clientX: x }] } = evt
+      const diff = x - this.touch.x
       if (diff > 60) this.prev()
       else if (diff < -60) this.next()
     },

@@ -30,7 +30,7 @@ async function fetch (pathname) {
       return new Commit({ sha, author: { name, avatar }, date, message, code: Base64.decode(content), url, fileName })
     })
   } catch (e) {
-    return Promise.reject(_.get(e, 'response.data.message') || '~/api/GitHub Error')
+    return Promise.reject(_.get(e, 'response.data.message', '~/api/GitHub Error'))
   }
 }
 

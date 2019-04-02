@@ -58,7 +58,7 @@ const langExts = {
 const extLang = {}
 _.forEach(langExts, (exts, lang) => exts.forEach(ext => { extLang[ext] = lang }))
 
-async function loadDep (lang) {
+async function loadDep (lang = 'javascript') {
   try {
     if (dep[lang]) await Promise.all(dep[lang].map(loadDep))
     if (!Prism.languages[lang]) await import(`prismjs/components/prism-${lang}`)
@@ -68,13 +68,13 @@ async function loadDep (lang) {
     return 'javascript'
   }
 }
-function detectLang (fileName) {
+function detectLang (fileName = '') {
   const [ext] = fileName.match(/(\.[a-z]+|dockerfile)$/) || []
   return extLang[ext] || 'javascript'
 }
 
 export default {
-  highlight (code, lang) {
+  highlight (code = '', lang = 'javascript') {
     return Prism.highlight(code, Prism.languages[lang], lang)
   },
   loadDep,

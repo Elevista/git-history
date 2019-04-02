@@ -18,17 +18,17 @@ export default {
   data () { return { key: 0, seq: 0, lines: [], transition: 'line-prev' } },
   computed: {
     commit () { return this.commits[this.index] || {} },
-    code () { return this.commit.code || '' }
+    code () { return this.commit.code }
   },
   watch: {
     index (n, o) { this.transition = n < o ? 'line-next' : 'line-prev' },
     code: {
-      async handler (n, o = '') {
+      async handler (n = '', o = '') {
         const lang = await Prism.loadDep(Prism.detectLang(this.commit.fileName))
         this.seq++
         let [idx, addIdx] = [0, 0]
         const diffs = diffLines(o, n)
-        const htmlLines = Prism.highlight(n, lang || 'javascript').split('\n')
+        const htmlLines = Prism.highlight(n, lang).split('\n')
         const add = html => ({ key: this.key++, html, delay: addIdx++ * 10, seq: this.seq })
         diffs.forEach(({ count, value, added, removed }) => {
           if (removed) return this.lines.splice(idx, count)
