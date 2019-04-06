@@ -16,15 +16,16 @@
       <div class="commits-scroll" :style="{transform:`translateX(${commitsScroll}%)`}">
         <button v-for="(commit,idx) of commits" :key="commit.sha" class="commit"
                 :class="{active:index===idx}" @click="$emit('update:index',idx)">
-          <div class="flex overflow-hidden align-center max-inherit">
+          <div class="inner">
             <div class="avatar" :style="{backgroundImage:`url(${commit.author.avatar})`}" />
-            <div class="flex-column flex-1 overflow-hidden">
+            <div class="info">
               <div class="name">{{ commit.author.name }}</div>
               <div class="date">{{ commit.date|date }}</div>
             </div>
           </div>
           <transition name="message">
-            <a v-if="index===idx" class="message" :href="commit.url" target="_blank">{{ commit.message.split('\n')[0] }}</a>
+            <a v-if="index===idx" class="message" :href="commit.url" target="_blank"
+               v-text="commit.message.split('\n')[0]" />
           </transition>
         </button>
         <button v-if="even" class="commit" />
@@ -80,29 +81,26 @@ export default {
     }
   }
   .commits{
-    display:flex;
-    justify-content: center;
+    display:flex;justify-content:center;height:5.5rem;
     .commits-scroll{transition: transform .6s ease-out;display: flex;flex-direction: row-reverse;}
     .commit{
       padding:0;border:none;outline:none;background: none;text-align: left;
-      width:12rem;
-      max-width:12rem;
-      display:flex;
-      flex-direction: column;
+      width:12.5rem;display:flex;flex-direction: column;align-items: center;
       opacity: .5;
-      align-items: center;
       &.active{opacity: 1;}
       transition: opacity .6s;
+      .inner{display:flex;height:3.5rem;align-items: center;}
       .avatar{
         flex-shrink: 0;
         width: 2rem;
         height: 2rem;
-        margin: 0.7rem;
+        margin-right: 0.5rem;
         background-size: contain;
         border: solid 1px lightgray;
         border-radius: 0.125rem;
         background-color: white;
       }
+      .info{max-width: 8.75rem;}
       .date{font-size: .8rem;color:lightgray}
       .name{overflow:hidden;text-overflow: ellipsis;white-space: nowrap;}
       .message{
