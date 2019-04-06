@@ -3,11 +3,15 @@
        @keydown.left.prevent="prev" @keydown.right.prevent="next"
        @touchstart="touchstart" @touchend="touchend">
     <div class="header" @wheel.stop="wheel">
-      <div class="menu flex">
-        <form class="flex flex-1" @submit.prevent="load">
-          <input v-model="url" type="url" class="url flex-1" @paste="paste">
-        </form>
-      </div>
+      <form class="form flex flex-1 justify-center align-center" @submit.prevent="load">
+        <a class="icon shrink-0" :style="api&&{backgroundImage:`url(${api.icon})`}"
+           :href="api&&urlStr" target="_blank " />
+        <div class="url">
+          <input v-model="urlStr" type="url" @paste="paste" @keydown.stop>
+          <span class="hidden">{{ urlStr }}</span>
+        </div>
+        <label class="private flex shrink-0"><input v-model="signin" type="checkbox" :disabled="!api"><span>Auth</span></label>
+      </form>
       <div class="commits">
         <div class="commits-scroll" :style="{transform:`translateX(${commitsScroll}%)`}">
           <button v-for="(commit,idx) of commits" :key="commit.sha" class="commit"
@@ -36,6 +40,10 @@
 import * as api from './api'
 import Diff from './Diff.vue'
 import moment from 'moment'
+import url from 'url'
+import _ from 'lodash'
+
+const defaultUrl = 'https://github.com/babel/babel/blob/master/packages/babel-core/test/browserify.js'
 
 export default {
   name: 'GitHistory',
@@ -48,18 +56,31 @@ export default {
     return {
       commits: [],
       index: 0,
+      tokens: JSON.parse((process.client && sessionStorage.tokens) || '{}'),
+      apiHost: _.keyBy(api, x => x.hostname),
       touch: { x: 0 },
-      url: this.$route.query.url || 'https://github.com/babel/babel/blob/master/packages/babel-core/test/browserify.js'
+      urlStr: this.$route.query.url || defaultUrl
     }
   },
   computed: {
     length () { return this.commits.length },
+    url () { return url.parse(this.urlStr) },
+    api () { return this.apiHost[this.url.hostname] },
     even () { return !(this.length % 2) },
+    token: {
+      get () { return this.api && this.tokens[this.api.hostname] },
+      set (v) { this.$set(this.tokens, this.api.hostname, v) && this.load() }
+    },
+    signin: {
+      get () { return !!this.token },
+      async set (v) { this.token = v ? await this.api.authenticate() : undefined }
+    },
     commitsScroll () {
       const diff = Math.ceil((this.length - 1) / 2) - this.index
       return (100 / (this.length + this.even)) * -diff
     }
   },
+  watch: { tokens: { handler (v) { sessionStorage.tokens = JSON.stringify(v) }, deep: true } },
   mounted () {
     this.$el.focus()
     this.load()
@@ -77,17 +98,13 @@ export default {
       else if (diff < -60) this.next()
     },
     async load () {
+      if (!this.api) return
       try {
-        for (const fn of Object.values(api)) {
-          const res = await fn(this.url)
-          if (!res) continue
-          this.commits = res.commits
-          this.index = 0
-          return
-        }
-        alert('no match api for url')
+        const res = await this.api.getCommits(this.url, this.token)
+        if (!res) return
+        this.commits = res.commits
+        this.index = 0
       } catch (e) {
-        console.error(e)
         alert(e)
       }
     },
@@ -116,11 +133,15 @@ export default {
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    .menu{
-      height: 1.4rem;
-      font-size: .7rem;
-      .url{outline: none;border: 1px solid #e1e4e8;border: none;background: none;text-align: center;}
-      .load{background: white;border: solid 1px black; color:black;outline: none;}
+    .form{
+      height: 1.5rem; font-size: .7rem; position: relative;
+      *{box-sizing: border-box;transition: all .3s linear}
+      .icon{background-repeat: no-repeat;background-size: contain;height: 1rem;width:1rem;}
+      border: 1px solid #e1e4e8;
+      .url{
+        position: relative; white-space: nowrap;max-width: 100%;overflow: hidden;margin:0 .3rem;height:100%;
+        input{width:100%;height:100%;outline: none;border: none;background: none;text-align: center;position: absolute;}
+      }
     }
     .commits{
       display:flex;
@@ -178,4 +199,6 @@ export default {
     img{width:100%}
   }
 }
+.hidden{visibility: hidden;}
+.shrink-0{flex-shrink: 0}
 </style>
