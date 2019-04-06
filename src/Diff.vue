@@ -1,11 +1,11 @@
 <template>
-  <div v-if="commits.length" class="diff">
+  <section v-if="commits.length" class="diff justify-center">
     <transition-group :name="transition" tag="code" appear @enter="setOffset">
       <span v-for="line of lines" :key="line.key" class="line"
             :style="line.seq===seq&&{transitionDelay:line.delay+'ms'}"
             v-html="line.html" />
     </transition-group>
-  </div>
+  </section>
 </template>
 <script>
 import { diffLines } from 'diff'
@@ -47,7 +47,6 @@ export default {
   overflow-x: hidden;
   overflow-y: scroll;
   height:100%;
-  justify-content: center;
   padding: 1rem;
   code{
     font-family: inherit;

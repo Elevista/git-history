@@ -1,13 +1,16 @@
 <template>
-  <header class="header">
-    <form class="form flex flex-1 justify-center align-center" @submit.prevent="load">
+  <header class="header flex-column">
+    <form class="form flex flex-1 justify-center align-center" @submit.prevent="load" @click="$refs.url.focus()">
       <a class="icon shrink-0" :style="api&&{backgroundImage:`url(${api.icon})`}"
-         :href="api&&urlStr" target="_blank " />
-      <div class="url">
-        <input v-model="urlStr" type="url" @paste="paste" @keydown.stop>
+         :href="api&&urlStr" target="_blank" @click.stop />
+      <div class="url" @click.stop>
+        <input ref="url" v-model="urlStr" type="url"
+               @paste="paste" @keydown.stop>
         <span class="hidden">{{ urlStr }}</span>
       </div>
-      <label class="private flex shrink-0"><input v-model="signin" type="checkbox" :disabled="!api"><span>Auth</span></label>
+      <label class="private flex shrink-0" @click.stop>
+        <input v-model="signin" type="checkbox" :disabled="!api"> Auth
+      </label>
     </form>
     <div class="commits">
       <div class="commits-scroll" :style="{transform:`translateX(${commitsScroll}%)`}">
@@ -64,16 +67,15 @@ export default {
   background-color: #fafbfc;
   padding-bottom: 0;
   border-bottom: 1px solid #e1e4e8;
-  display: flex;
   overflow: hidden;
-  flex-direction: column;
   .form{
     height: 1.5rem; font-size: .7rem; position: relative;
     *{box-sizing: border-box;transition: all .3s linear}
     .icon{background-repeat: no-repeat;background-size: contain;height: 1rem;width:1rem;}
     border: 1px solid #e1e4e8;
     .url{
-      position: relative; white-space: nowrap;max-width: 100%;overflow: hidden;margin:0 .3rem;height:100%;
+      position: relative; white-space: nowrap;max-width: 100%;
+      overflow: hidden;margin:0 .3rem;height:100%;min-width: 1rem;
       input{width:100%;height:100%;outline: none;border: none;background: none;text-align: center;position: absolute;}
     }
   }

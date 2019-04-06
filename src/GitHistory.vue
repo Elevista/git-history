@@ -4,8 +4,7 @@
        @touchstart="touchstart" @touchend="touchend">
     <Header v-model="urlStr" :commits="commits" :index.sync="index" :api="api"
             :token.sync="token" @wheel.native.stop="wheel" @load="load" />
-    <Diff v-if="commits.length" :commits="commits" :index="index" class="content"
-          @wheel.native.stop="wheel($event,true)" />
+    <Diff :commits="commits" :index="index" class="flex-1" @wheel.native.stop="wheel($event,true)" />
     <a href="https://github.com/Elevista/git-history" target="_blank" class="github"><img src="~/assets/GitHub-Mark.png"></a>
   </div>
 </template>
@@ -71,7 +70,7 @@ export default {
       }
     },
     next () { if (this.index > 0) this.index-- },
-    prev () { if (this.index + 1 < this.commits.length) this.index++ },
+    prev () { if (this.index + 1 < this.length) this.index++ },
     wheel (evt, checkShift = false) {
       const { shiftKey = false, deltaY } = evt
       if (checkShift && !shiftKey) return
