@@ -50,6 +50,7 @@ export default {
   justify-content: center;
   padding: 1rem;
   code{
+    font-family: inherit;
     margin:0 auto;
     max-width: 800px;
     display: block;

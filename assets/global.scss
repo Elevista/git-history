@@ -7,12 +7,3 @@ html, body, #__nuxt, #__layout, #__layout>div {
   min-height: 100%;
   font-family: 'Noto Sans', sans-serif;
 }
-body code{font-family: 'Noto Sans', sans-serif;}
-.flex{display: flex;}
-.flex-row{display: flex;flex-direction: row;}
-.flex-column{display: flex;flex-direction: column;}
-.align-center{align-items: center;}
-.justify-center{justify-content: center;}
-.flex-1{flex:1}
-.overflow-hidden{overflow: hidden;}
-.max-inherit{max-width: inherit;max-height: inherit;}
