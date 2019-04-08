@@ -73,7 +73,7 @@ export default {
   overflow: hidden;
   .form{
     box-sizing: border-box;
-    height: 1.5rem; font-size: .7rem; position: relative;padding:0 .3rem;
+    min-height:1.5rem;height: 1.5rem; font-size: .7rem; position: relative;padding:0 .3rem;
     .icon{background-repeat: no-repeat;background-size: contain;height: 1rem;width:1rem;}
     border-bottom: 1px solid #e1e4e8;
     .url{
@@ -89,7 +89,7 @@ export default {
   }
   }
   .commits{
-    display:flex;justify-content:center;height:5.5rem;
+    display:flex;justify-content:center;align-items: center;flex-direction: column;height:5.5rem;
     .commits-scroll{transition: transform .6s ease-out;display: flex;flex-direction: row-reverse;}
     .commit{
       padding:0;border:none;outline:none;background: none;text-align: left;
