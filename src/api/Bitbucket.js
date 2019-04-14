@@ -37,20 +37,26 @@ async function authenticate () {
 }
 
 async function fetch (pathname, token) {
-  const axios = Axios.create({ baseURL, ...token && { headers: { common: { Authorization: `Bearer ${token}` } } } })
-  const [, owner, repo, , sha, ...paths] = pathname.split('/')
-  const path = paths.join('/')
-  const { data: { values: commits } } = await axios.get(`/2.0/repositories/${owner}/${repo}/filehistory/${sha}/${path}`, { params })
-  return Promise.all(commits.map(async commit => {
-    const [date, message, sha, name, avatar = neutralIcon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
-    const pathname = `/${owner}/${repo}/src/${sha}/${path}`
-    const rest = {
-      url: `https://bitbucket.org${pathname}`,
-      fileName: basename(path),
-      code: await axios.get(`/2.0/repositories${pathname}`).then(x => x.data)
-    }
-    return new Commit({ sha, author: { name, avatar }, date, message, ...rest })
-  }))
+  try {
+    const axios = Axios.create({ baseURL, ...token && { headers: { common: { Authorization: `Bearer ${token}` } } } })
+    const [, owner, repo, , sha, ...paths] = pathname.split('/')
+    const path = paths.join('/')
+    const { data: { values: commits } } = await axios.get(`/2.0/repositories/${owner}/${repo}/filehistory/${sha}/${path}`, { params })
+    return Promise.all(commits.map(async commit => {
+      const [date, message, sha, name, avatar = neutralIcon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
+      const pathname = `/${owner}/${repo}/src/${sha}/${path}`
+      const rest = {
+        url: `https://bitbucket.org${pathname}`,
+        fileName: basename(path),
+        code: await axios.get(`/2.0/repositories${pathname}`).then(x => x.data)
+      }
+      return new Commit({ sha, author: { name, avatar }, date, message, ...rest })
+    }))
+  } catch (e) {
+    if (_.get(e, 'response.status') === 401) return fetch(pathname, await authenticate()) // token no longer valid
+    if (process.env.NODE_ENV !== 'production') console.error(e)
+    return Promise.reject(_.get(e, 'response.data.error.message', `~/api/Bitbucket Error`))
+  }
 }
 
 export default {
