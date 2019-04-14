@@ -3,7 +3,8 @@ import Commit from '../Commit'
 import _ from 'lodash'
 import { basename } from 'path'
 import Netlify from 'netlify-auth-providers'
-import icon from '~/assets/bitbucket-neutral.svg'
+import icon from '~/assets/Bitbucket-blue.svg'
+import neutralIcon from '~/assets/bitbucket-neutral.svg'
 const siteId = 'e118565a-2bcd-40be-b5ba-a76411cb721c'
 const baseURL = 'https://api.bitbucket.org'
 
@@ -41,7 +42,7 @@ async function fetch (pathname, token) {
   const path = paths.join('/')
   const { data: { values: commits } } = await axios.get(`/2.0/repositories/${owner}/${repo}/filehistory/${sha}/${path}`, { params })
   return Promise.all(commits.map(async commit => {
-    const [date, message, sha, name, avatar = icon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
+    const [date, message, sha, name, avatar = neutralIcon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
     const pathname = `/${owner}/${repo}/src/${sha}/${path}`
     const rest = {
       url: `https://bitbucket.org${pathname}`,
