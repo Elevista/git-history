@@ -1,16 +1,19 @@
 <template>
   <header class="header flex-column">
     <form class="form flex flex-1 justify-center align-center" @submit.prevent="load" @click="$refs.url.focus()">
-      <a class="icon shrink-0" :style="api&&{backgroundImage:`url(${api.icon})`}"
+      <a v-show="api" class="icon shrink-0" :style="api&&{backgroundImage:`url(${api.icon})`}"
          :href="api&&urlStr" target="_blank" @click.stop />
       <div class="url" @click.stop>
         <input ref="url" v-model="urlStr" type="url"
                @paste="paste" @keydown.stop>
         <span class="hidden">{{ urlStr }}</span>
       </div>
-      <label class="private flex shrink-0" @click.stop>
-        <input v-model="signin" type="checkbox" :disabled="!api"> Auth
-      </label>
+      <button class="private shrink-0" :disabled="!api" :class="{signin}" type="button"
+              @click.stop="api&&(signin=!signin)">
+        <svg viewBox="0 0 12 16" version="1.1" width="12" height="16">
+          <path fill-rule="evenodd" d="M4 13H3v-1h1v1zm8-6v7c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V7c0-.55.45-1 1-1h1V4c0-2.2 1.8-4 4-4s4 1.8 4 4v2h1c.55 0 1 .45 1 1zM3.8 6h4.41V4c0-1.22-.98-2.2-2.2-2.2-1.22 0-2.2.98-2.2 2.2v2H3.8zM11 7H2v7h9V7zM4 8H3v1h1V8zm0 2H3v1h1v-1z" />
+        </svg>
+      </button>
     </form>
     <div class="commits">
       <div class="commits-scroll" :style="{transform:`translateX(${commitsScroll}%)`}">
@@ -56,7 +59,6 @@ export default {
       return (100 / (this.length + this.even)) * -diff
     }
   },
-  mounted () { this.load() },
   methods: {
     paste () { setTimeout(() => { this.load() }, 0) },
     load () { this.$emit('load') }
@@ -70,18 +72,25 @@ export default {
   border-bottom: 1px solid #e1e4e8;
   overflow: hidden;
   .form{
-    height: 1.5rem; font-size: .7rem; position: relative;
-    *{box-sizing: border-box;transition: all .3s linear}
+    box-sizing: border-box;
+    min-height:1.5rem;height: 1.5rem; font-size: .7rem; position: relative;padding:0 .3rem;
     .icon{background-repeat: no-repeat;background-size: contain;height: 1rem;width:1rem;}
-    border: 1px solid #e1e4e8;
+    border-bottom: 1px solid #e1e4e8;
     .url{
       position: relative; white-space: nowrap;max-width: 100%;
       overflow: hidden;margin:0 .3rem;height:100%;min-width: 1rem;
-      input{width:100%;height:100%;outline: none;border: none;background: none;text-align: center;position: absolute;}
+      input{width:100%;height:100%;outline: none;border: none;background: none;text-align: center;position: absolute;padding:0;}
     }
+    .private.signin{color:#dbab09;}
+    .private:disabled{opacity: 0;}
+    .private{
+      color:#959da5;outline: none;background: none;border: none;
+      padding:0;margin:0;width:1rem;height:1rem;transition: all .3s cubic-bezier(0, 0.54, 0.45, 0.93);
+      svg{fill:currentColor;height:100%;width:auto;}
+  }
   }
   .commits{
-    display:flex;justify-content:center;height:5.5rem;
+    display:flex;justify-content:center;align-items: center;flex-direction: column;height:5.5rem;
     .commits-scroll{transition: transform .6s ease-out;display: flex;flex-direction: row-reverse;}
     .commit{
       padding:0;border:none;outline:none;background: none;text-align: left;
