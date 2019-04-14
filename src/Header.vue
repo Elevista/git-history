@@ -1,7 +1,7 @@
 <template>
   <header class="header flex-column">
     <form class="form flex flex-1 justify-center align-center" @submit.prevent="load" @click="$refs.url.focus()">
-      <a class="icon shrink-0" :style="api&&{backgroundImage:`url(${api.icon})`}"
+      <a v-show="api" class="icon shrink-0" :style="api&&{backgroundImage:`url(${api.icon})`}"
          :href="api&&urlStr" target="_blank" @click.stop />
       <div class="url" @click.stop>
         <input ref="url" v-model="urlStr" type="url"
@@ -82,6 +82,7 @@ export default {
       input{width:100%;height:100%;outline: none;border: none;background: none;text-align: center;position: absolute;padding:0;}
     }
     .private.signin{color:#dbab09;}
+    .private:disabled{opacity: 0;}
     .private{
       color:#959da5;outline: none;background: none;border: none;
       padding:0;margin:0;width:1rem;height:1rem;transition: all .3s cubic-bezier(0, 0.54, 0.45, 0.93);
