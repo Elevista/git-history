@@ -14,7 +14,7 @@ const rec = (path, value) => {
 }
 const fields = {
   values: [
-    'path', {
+    {
       commit: [
         'date', 'message', 'hash',
         { 'author.user': ['display_name', 'links.avatar.href'] }
@@ -41,7 +41,7 @@ async function fetch (pathname, token) {
   const path = paths.join('/')
   const { data: { values: commits } } = await axios.get(`/2.0/repositories/${owner}/${repo}/filehistory/${sha}/${path}`, { params })
   return Promise.all(commits.map(async commit => {
-    const [path, date, message, sha, name, avatar = icon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
+    const [date, message, sha, name, avatar = icon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
     const pathname = `/${owner}/${repo}/src/${sha}/${path}`
     const rest = {
       url: `https://bitbucket.org${pathname}`,

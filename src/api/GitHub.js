@@ -5,16 +5,7 @@ import { Base64 } from 'js-base64'
 import Netlify from 'netlify-auth-providers'
 import icon from '~/assets/GitHub-Mark.png'
 const siteId = 'e118565a-2bcd-40be-b5ba-a76411cb721c'
-const isPromise = v => typeof v.then === 'function'
 const baseURL = 'https://api.github.com'
-
-function camelCase (o) {
-  if (!(o instanceof Object)) return o
-  if (isPromise(o)) return o.then(camelCase)
-  if (_.isArrayLikeObject(o)) return _.map(o, camelCase)
-  if (_.isPlainObject(o)) return _(o).mapKeys((v, k) => _.camelCase(k)).mapValues(camelCase).value()
-  return o
-}
 
 async function authenticate () {
   try {
@@ -30,20 +21,15 @@ async function fetch (pathname, token) {
   try {
     const axios = Axios.create({ baseURL, ...token && { headers: { common: { Authorization: `bearer ${token}` } } } })
     const [, owner, repo, , sha, ...paths] = pathname.split('/')
-    const path = `/${paths.join('/')}`
+    const path = paths.join('/')
     const { data: commits } = await axios.get(`/repos/${owner}/${repo}/commits?sha=${sha}&path=${path}`)
-    await Promise.all(commits.map(async commit => {
-      commit.contents = await axios.get(`/repos/${owner}/${repo}/contents${path}?ref=${commit.sha}`).then(x => x.data)
+    return Promise.all(commits.map(async commit => {
+      const { sha, author, commit: { author: { name, date } = {}, message } = {} } = commit
+      const { avatar_url: avatar = icon } = author || {} // author can be null
+      const { name: fileName, content, html_url: url } = await axios.get(`/repos/${owner}/${repo}/contents/${path}?ref=${commit.sha}`).then(x => x.data)
+      const code = Base64.decode(content)
+      return new Commit({ sha, author: { name, avatar }, date, message, code, url, fileName })
     }))
-    return camelCase(commits).map(commit => {
-      const {
-        sha, author,
-        commit: { author: { name, date } = {}, message } = {},
-        contents: { name: fileName, content, htmlUrl: url } = {}
-      } = commit
-      const { avatarUrl: avatar = icon } = author || {} // author can be null
-      return new Commit({ sha, author: { name, avatar }, date, message, code: Base64.decode(content), url, fileName })
-    })
   } catch (e) {
     if (_.get(e, 'response.status') === 401) return fetch(pathname, await authenticate()) // token no longer valid
     if (process.env.NODE_ENV !== 'production') console.error(e)
