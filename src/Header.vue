@@ -105,6 +105,8 @@ export default {
         height: 2rem;
         margin-right: 0.5rem;
         background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
         border: solid 1px lightgray;
         border-radius: 0.125rem;
         background-color: white;
