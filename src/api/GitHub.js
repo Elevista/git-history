@@ -8,13 +8,9 @@ const siteId = 'e118565a-2bcd-40be-b5ba-a76411cb721c'
 const baseURL = 'https://api.github.com'
 
 async function authenticate () {
-  try {
-    const authenticator = new Netlify({ site_id: siteId })
-    const { token } = await new Promise((resolve, reject) => authenticator.authenticate({ provider: 'github', scope: 'repo' }, (err, data) => err ? reject(err) : resolve(data)))
-    return token
-  } catch (e) {
-    console.log(e)
-  }
+  const authenticator = new Netlify({ site_id: siteId })
+  const { token } = await new Promise((resolve, reject) => authenticator.authenticate({ provider: 'github', scope: 'repo' }, (err, data) => err ? reject(err) : resolve(data)))
+  return token
 }
 
 async function fetch (pathname, token) {
@@ -31,9 +27,8 @@ async function fetch (pathname, token) {
       return new Commit({ sha, author: { name, avatar }, date, message, code, url, fileName })
     }))
   } catch (e) {
-    if (_.get(e, 'response.status') === 401) return fetch(pathname, await authenticate()) // token no longer valid
-    if (process.env.NODE_ENV !== 'production') console.error(e)
-    return Promise.reject(_.get(e, 'response.data.message', '~/api/GitHub Error'))
+    if (_.get(e, 'response.status') === 401) throw Object.assign(e, { tokenExpired: true })
+    throw new Error(_.get(e, 'response.data.message', '~/api/GitHub Error'))
   }
 }
 

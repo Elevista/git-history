@@ -27,13 +27,9 @@ const fieldsPath = _.flattenDeep(rec('', fields))
 const params = { fields: fieldsPath.join(',') }
 
 async function authenticate () {
-  try {
-    const authenticator = new Netlify({ site_id: siteId })
-    const { token } = await new Promise((resolve, reject) => authenticator.authenticate({ provider: 'bitbucket', scope: 'repo' }, (err, data) => err ? reject(err) : resolve(data)))
-    return token
-  } catch (e) {
-    console.log(e)
-  }
+  const authenticator = new Netlify({ site_id: siteId })
+  const { token } = await new Promise((resolve, reject) => authenticator.authenticate({ provider: 'bitbucket', scope: 'repo' }, (err, data) => err ? reject(err) : resolve(data)))
+  return token
 }
 
 async function fetch (pathname, token) {
@@ -53,9 +49,8 @@ async function fetch (pathname, token) {
       return new Commit({ sha, author: { name, avatar }, date, message, ...rest })
     }))
   } catch (e) {
-    if (_.get(e, 'response.status') === 401) return fetch(pathname, await authenticate()) // token no longer valid
-    if (process.env.NODE_ENV !== 'production') console.error(e)
-    return Promise.reject(_.get(e, 'response.data.error.message', `~/api/Bitbucket Error`))
+    if (_.get(e, 'response.status') === 401) throw Object.assign(e, { tokenExpired: true })
+    throw new Error(_.get(e, 'response.data.error.message', `~/api/Bitbucket Error`))
   }
 }
 

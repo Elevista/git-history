@@ -66,7 +66,9 @@ export default {
         this.commits = res.commits
         this.index = 0
       } catch (e) {
-        alert(e)
+        if (process.env.NODE_ENV !== 'production') console.error(e)
+        if (e.tokenExpired) this.token = await this.api.authenticate()
+        else alert(e)
       }
     },
     next () { if (this.index > 0) this.index-- },
