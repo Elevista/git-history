@@ -45,7 +45,7 @@ async function fetch (pathname, token) {
       const rest = {
         url: `https://bitbucket.org${pathname}`,
         fileName: basename(path),
-        code: await axios.get(`/2.0/repositories${pathname}`).then(x => x.data)
+        code: await axios.get(`/2.0/repositories${pathname}`, { transformResponse: x => x }).then(x => x.data)
       }
       return new Commit({ sha, author: { name, avatar }, date, message, ...rest })
     }))
