@@ -6,7 +6,7 @@ import Netlify from 'netlify-auth-providers'
 import icon from '~/assets/Bitbucket-blue.svg'
 import neutralIcon from '~/assets/bitbucket-neutral.svg'
 const siteId = 'e118565a-2bcd-40be-b5ba-a76411cb721c'
-const baseURL = 'https://api.bitbucket.org'
+const apiURL = 'https://api.bitbucket.org/2.0/repositories'
 
 const rec = (path, value) => {
   if (value instanceof Array) return value.map(x => rec(path, x))
@@ -35,17 +35,19 @@ async function authenticate () {
 
 async function fetch (pathname, token) {
   try {
-    const axios = Axios.create({ baseURL, ...token && { headers: { common: { Authorization: `Bearer ${token}` } } } })
-    const [, owner, repo, , sha, ...paths] = pathname.split('/')
-    const path = paths.join('/')
-    const { data: { values: commits } } = await axios.get(`/2.0/repositories/${owner}/${repo}/filehistory/${sha}/${path}`, { params })
+    const [, owner, repo, , sha, ...rest] = pathname.split('/')
+    const axios = Axios.create({
+      baseURL: `${apiURL}/${owner}/${repo}`,
+      ...token && { headers: { common: { Authorization: `Bearer ${token}` } } }
+    })
+    const path = rest.join('/')
+    const { data: { values: commits } } = await axios.get(`/filehistory/${sha}/${path}`, { params })
     return Promise.all(commits.map(async commit => {
       const [date, message, sha, rawName, name = rawName, avatar = neutralIcon] = _.map(fieldsPath, x => _.get({ values: commit }, x))
-      const pathname = `/${owner}/${repo}/src/${sha}/${path}`
       const rest = {
-        url: `https://bitbucket.org${pathname}`,
+        url: `https://bitbucket.org/${owner}/${repo}/src/${sha}/${path}`,
         fileName: basename(path),
-        code: await axios.get(`/2.0/repositories${pathname}`, { transformResponse: x => x }).then(x => x.data)
+        code: await axios.get(`/src/${sha}/${path}`, { transformResponse: x => x }).then(x => x.data)
       }
       return new Commit({ sha, author: { name, avatar }, date, message, ...rest })
     }))

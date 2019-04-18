@@ -5,7 +5,7 @@ import { Base64 } from 'js-base64'
 import Netlify from 'netlify-auth-providers'
 import icon from '~/assets/GitHub-Mark.png'
 const siteId = 'e118565a-2bcd-40be-b5ba-a76411cb721c'
-const baseURL = 'https://api.github.com'
+const apiURL = 'https://api.github.com/repos'
 
 async function authenticate () {
   const authenticator = new Netlify({ site_id: siteId })
@@ -15,14 +15,17 @@ async function authenticate () {
 
 async function fetch (pathname, token) {
   try {
-    const axios = Axios.create({ baseURL, ...token && { headers: { common: { Authorization: `bearer ${token}` } } } })
-    const [, owner, repo, , sha, ...paths] = pathname.split('/')
-    const path = paths.join('/')
-    const { data: commits } = await axios.get(`/repos/${owner}/${repo}/commits?sha=${sha}&path=${path}`)
+    const [, owner, repo, , sha, ...rest] = pathname.split('/')
+    const axios = Axios.create({
+      baseURL: `${apiURL}/${owner}/${repo}`,
+      ...token && { headers: { common: { Authorization: `bearer ${token}` } } }
+    })
+    const path = rest.join('/')
+    const { data: commits } = await axios.get(`/commits`, { params: { sha, path } })
     return Promise.all(commits.map(async commit => {
       const { sha, author, commit: { author: { name, date } = {}, message } = {} } = commit
       const { avatar_url: avatar = icon } = author || {} // author can be null
-      const { name: fileName, content, html_url: url } = await axios.get(`/repos/${owner}/${repo}/contents/${path}?ref=${commit.sha}`).then(x => x.data)
+      const { name: fileName, content, html_url: url } = await axios.get(`/contents/${path}`, { params: { ref: sha } }).then(x => x.data)
       const code = Base64.decode(content)
       return new Commit({ sha, author: { name, avatar }, date, message, code, url, fileName })
     }))
