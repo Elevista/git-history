@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="14px" viewBox="0 0 16 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: sketchtool 51.1 (57501) - http://www.bohemiancoding.com/sketch -->
+    <title>9B400751-3294-48C2-A771-3D6A0BF17C4F</title>
+    <desc>Created with sketchtool.</desc>
+    <defs>
+        <linearGradient x1="108.63338%" y1="13.7911909%" x2="46.9265964%" y2="78.7761408%" id="linearGradient-1">
+            <stop stop-color="#344563" offset="18%"></stop>
+            <stop stop-color="#5E6C84" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Audit-Log-no-pagnination-filters" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icons" transform="translate(-66.000000, -197.000000)">
+            <g id="Bitbucket-icon-neutral" transform="translate(66.000000, 197.000000)">
+                <polygon id="Shape" points="6.425 9.14912281 9.6875 9.14912281 10.475 4.63473684 5.5575 4.63473684"></polygon>
+                <path d="M0.75,-1.12892551e-16 C0.602291135,-0.00187165875 0.461299777,0.0605223802 0.364846785,0.170444948 C0.268393793,0.280367515 0.226352331,0.426566669 0.25,0.569824561 L2.3725,13.2287719 C2.42708753,13.5485357 2.70749161,13.7836298 3.0375,13.7863158 L13.22,13.7863158 C13.4676964,13.7894479 13.6803858,13.6139231 13.72,13.3736842 L15.8425,0.572280702 C15.8667413,0.429920082 15.8260271,0.284289365 15.7311707,0.174067063 C15.6363143,0.0638447606 15.4969164,0.000186691963 15.35,-1.12892551e-16 L0.75,-1.12892551e-16 Z M9.6875,9.14912281 L6.4375,9.14912281 L5.5575,4.63473684 L10.475,4.63473684 L9.6875,9.14912281 Z" id="Shape" fill="#5E6C84" fill-rule="nonzero"></path>
+                <path d="M15.1675,4.63473684 L10.475,4.63473684 L9.6875,9.14912281 L6.4375,9.14912281 L2.6,13.6266667 C2.72163179,13.7299971 2.87670691,13.7874565 3.0375,13.7887719 L13.2225,13.7887719 C13.4701964,13.791904 13.6828858,13.6163793 13.7225,13.3761404 L15.1675,4.63473684 Z" id="Shape" fill="url(#linearGradient-1)" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>
