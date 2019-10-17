@@ -15,7 +15,7 @@ import Diff from './Diff.vue'
 import url from 'url'
 import _ from 'lodash'
 
-const defaultUrl = 'https://github.com/babel/babel/blob/master/packages/babel-core/test/browserify.js'
+const defaultUrl = 'https://github.com/babel/babel/blob/master/packages/babel-core/test/parse.js'
 
 export default {
   name: 'GitHistory',
