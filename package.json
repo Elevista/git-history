@@ -13,7 +13,7 @@
     "axios": "^0.18.1",
     "diff": "^4.0.1",
     "js-base64": "^2.5.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "netlify-auth-providers": "^1.0.0-alpha5",
     "normalize.css": "^8.0.1",
